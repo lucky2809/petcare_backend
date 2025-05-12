@@ -4,6 +4,7 @@ const { connectDB } = require("./utils/db")
 const { userRoute } = require("./Routes/userRoutes")
 const { breedRoute } = require("./Routes/breedRoutes")
 const { blogRoute } = require("./Routes/bolgRoutes")
+const { bookRoute } = require("./Routes/bookingRouter")
 require("dotenv").config()
 const PORT = process.env.BACK_END_URL_PORT || 5000
 const app = express()
@@ -21,8 +22,9 @@ connectDB()
 
 app.use("/api",userRoute)
 // app.use("/api/tokenverification",userRoute)
-app.use("/breed",breedRoute)
-app.use("/blog", blogRoute)
+app.use("/api/breed",breedRoute)
+app.use("/api/blog", blogRoute)
+app.use("/api/booking", bookRoute)
 
 
 app.listen(PORT, () =>{
