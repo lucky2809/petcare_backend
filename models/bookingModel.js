@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const { generateAlphanumericSerial } = require("../utils/helperFunc")
 
-const { Schema } = require("mongoose")
+const { Schema } = require("mongoose")         
 
 
 // const bookingSchema = new mongoose.Schema({
@@ -12,9 +12,8 @@ const { Schema } = require("mongoose")
 //     start_date: { type: Date, required: false},
 //     end_date: { type: Date, required: false},
 //     user_id: { type: String, required: false},
-
-
 // })
+
 
 const userBookingSchema = new mongoose.Schema({
 
@@ -33,6 +32,13 @@ const userBookingSchema = new mongoose.Schema({
     taxiDetails: { type: Schema.Types.Mixed, required: false },
     groomingDetails: { type: Schema.Types.Mixed, required: false },
     pet_type: { type: String, required: false, default: "cat" },
+    cart_id: { type: String, required:false},
+    payment_status: { type: Boolean, required:false},
+    booking_price: { type: String, required:false},
+
+    petMeditionDetails: { type: [Schema.Types.Mixed], required: false },
+    petVaccineDetails: { type: [Schema.Types.Mixed], required: false },
+    treatmentDetails: { type: [Schema.Types.Mixed], required: false },
 
 
 }, {
