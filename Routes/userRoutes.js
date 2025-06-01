@@ -3,9 +3,9 @@ const { getAllUsers, getAllById, postUserData, logIn, tokenVerify, registrationA
 const userRoute = express.Router()
 
 userRoute.get("/", getAllUsers);
-userRoute.get("/:id", getAllById);
+userRoute.get("/user/:id", getAllById);
 userRoute.post("/registration-api/",registrationApi)
 userRoute.post("/login/",logIn);
-userRoute.get("/token",tokenVerify)
+userRoute.get("/verify-token",tokenVerify)
 
 module.exports = { userRoute }

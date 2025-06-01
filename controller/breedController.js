@@ -9,7 +9,7 @@ const getBreedData = async (request, response) => {
         const findAllData = await breedModule.find()
         return response.send({ data: findAllData })
     } catch (err) {
-        return response.status(400).send({ massage: "Somthing Went Wrong...! ", err })
+        return response.status(400).send({ message: "Somthing Went Wrong...! ", err })
     }
 }
 
@@ -24,10 +24,10 @@ const postBreedData = async (request, response) => {
             breed_type: body.breed_type
         })
         await breedData.save()
-        return response.send({ massage: "data insert succesfully ...!" })
+        return response.send({ message: "data insert succesfully ...!" })
 
     } catch (err) {
-        return response.status(500).send({ massage: "Somthing Went Wrong", err })
+        return response.status(500).send({ message: "Somthing Went Wrong", err })
     }
 }
 
@@ -35,9 +35,9 @@ const deleteBreddData = async (request, response) => {
     try {
         const id = request.params.id
         const findData = await breedModule.findByIdAndDelete(id)
-        return response.send({ massage: `${findData} is detele` })
+        return response.send({ message: `${findData} is detele` })
     } catch (err) {
-        return response.status(400).send({ massage: "Somthing went wrong ...!" })
+        return response.status(400).send({ message: "Somthing went wrong ...!" })
     }
 }
 
@@ -46,9 +46,9 @@ const updateBreddData = async (request, response) => {
         const id = request.params.id
         const obj = request.body
         const findData_by_id = await breedModule.findByIdAndUpdate({ _id: id }, obj)
-        return response.send({ massage: `${findData_by_id} is updated` })
+        return response.send({ message: `${findData_by_id} is updated` })
     } catch (err) {
-        return response.status(400).send({ massage: "Somthing went wrong ...!" })
+        return response.status(400).send({ message: "Somthing went wrong ...!" })
     }
 }
 

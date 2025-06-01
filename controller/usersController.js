@@ -1,6 +1,6 @@
 const bycrypt = require("bcrypt")
 const saltRound = 10
-const JWT_key = process.env.JWT_SECRIT_KEY
+const JWT_key = process.env.JWT_SECRET_KEY
 const jwt_ = require("jsonwebtoken")
 const { request, response } = require("express")
 const { UserModel } = require("../models/usersModel")
@@ -12,7 +12,7 @@ const getAllUsers = async (request, response) => {
         const data = await UserModel.find()
         return response.send({ data: "Get api is runing...!" })
     } catch (err) {
-        response.status(500).send({ massage: "Somthing went wrong ", err })
+        response.status(500).send({ message: "Somthing went wrong ", err })
     }
 }
 
@@ -23,7 +23,7 @@ const getAllById = async (request, response) => {
         return response.send({ User_data: data })
 
     } catch (err) {
-        response.status(500).send({ massage: "Somthing went wrong ...! ", err })
+        response.status(500).send({ message: "Somthing went wrong ...! ", err })
     }
 }
 
@@ -36,14 +36,14 @@ const registrationApi = async (request, response) => {
         const objLength = Object.keys(body).length
 
         if (objLength === 0) {
-            return response.status(400).send({ massage: "Empty ... !" })
+            return response.status(400).send({ message: "Empty ... !" })
         }
 
         if (find_Email) {
-            return response.status(400).send({ massage: "Email is Allredy Exsist ... !" })
+            return response.status(400).send({ message: "Email is Allredy Exsist ... !" })
         }
         if (password.length <= 8) {
-            return response.status(400).send({ massage: "Minnimum 8 latter Allowed ... !" })
+            return response.status(400).send({ message: "Minnimum 8 latter Allowed ... !" })
         }
 
         const hashPassword = await bycrypt.hash(password, saltRound)
@@ -51,7 +51,7 @@ const registrationApi = async (request, response) => {
         const data = new UserModel({
 
             firstname: body.firstname,
-            lastname: body.lastname,     
+            lastname: body.lastname,
             email: body.email,
             password: hashPassword
 
@@ -59,11 +59,11 @@ const registrationApi = async (request, response) => {
         const userData = new UserModel(data)
         console.log(userData)
         await userData.save()
-        return response.status(201).send({ massage: "data insert succesfully ... !" })
+        return response.status(201).send({ message: "data insert succesfully ... !" })
 
 
     } catch (err) {
-        return response.status(400).send({ massage: "Somthing Went Wrong ...! " + JSON.stringify(err) })
+        return response.status(400).send({ message: "Somthing Went Wrong ...! " + JSON.stringify(err) })
 
     }
 
@@ -77,22 +77,22 @@ const registrationApi = async (request, response) => {
 //         // const objLength = Object.keys(body).length
 
 //         // if (objLength === 0) {
-//         //     return response.status(400).send({ massage: "no body found" })
+//         //     return response.status(400).send({ message: "no body found" })
 //         // }
 
 //         const email_And_Username_Find = await UserModel.findOne({ email: body.email })
 //         const Username_Find = await UserModel.findOne({ firstname: body.firstname })
 
 //         if (email_And_Username_Find) {
-//             return response.status(400).send({ massage: "Email is alredy Exsist ...!" })
+//             return response.status(400).send({ message: "Email is alredy Exsist ...!" })
 //         }
 
 //         if (Username_Find) {
-//             return response.status(400).send({ massage: "Username is alredy Exsist ...!" })
+//             return response.status(400).send({ message: "Username is alredy Exsist ...!" })
 //         }
 
 //         if (getPassword.length < 8) {
-//             return response.status(400).send({ massage: "Minimum  8 latter allowed ...!" })
+//             return response.status(400).send({ message: "Minimum  8 latter allowed ...!" })
 //         }
 
 //         const bcryptPassword = await bcrypt.hash(getPassword, saltRound)
@@ -106,47 +106,59 @@ const registrationApi = async (request, response) => {
 //         })
 
 //         await user_data.save()
-//         return response.send({ massage: "data insert succesfully ... !" })
+//         return response.send({ message: "data insert succesfully ... !" })
 
 //     } catch (err) {
-//         return response.status(400).send({ massage: "Somthing went wrong ... !", err })
+//         return response.status(400).send({ message: "Somthing went wrong ... !", err })
 //     }
 // }
 
 const logIn = async (request, response) => {  // login API 
     try {
         const body = request.body
-       
+
         const find_Data = await UserModel.findOne({ email: body.email })
         const compairPassword = await bycrypt.compare(body.password, find_Data.password)
-        
-        if (!find_Data) {
-            return response.status(400).send({ massage: "Email is not found ... ! ", err })
-        }
 
+        if (!find_Data) {
+            return response.status(400).send({ message: "Email is not found ... ! ", err })
+        }
+        const { email, role } = find_Data
         if (!compairPassword) {
-            return response.status(400).send({ massage: "password is not found ... ! ", err })
+            return response.status(400).send({ message: "password is not found ... ! ", err })
         } else {
-            const token = jwt_.sign(body, JWT_key, { expiresIn: "1h" })
-            response.send({ massage: "log in succesfully ", data: token })
+            const token = jwt_.sign({ email, role }, JWT_key, { expiresIn: "1h" })
+            response.send({ message: "log in succesfully ", token })
         }
 
     } catch (err) {
-        return response.status(400).send({ massage: "Somthing went wrong ... ! ", err })
+        return response.status(400).send({ message: "Somthing went wrong ... ! ", err })
     }
 
 }
 
-const tokenVerify = async (request, response) => {
+const tokenVerify = async function (request, response) {
+    const auth = request.headers.authorization
+    // console.log("auth", auth)
     try {
-        const verify = verify_Token(request)
-        if (!verify) {
-            return response.status(400).send({ massage: "token is not verifyed" })
-        } else {
-            return response.status(200).send({ massage: "verifird" })
+        if (!auth) {
+            return response.status(401).send({ message: "token missing" })
+
         }
-    } catch (err) {
-        response.status(400).send({ massage: "token is not found " })
+        const token = auth.split(" ").pop()
+        // console.log("token", token)
+        const isVerify = jwt_.verify(token, process.env.JWT_SECRET_KEY)
+        if (isVerify) {
+            return response.status(200).send({ message: "verify successful", user_data: isVerify })
+        } else {
+            return response.status(401).send({ message: "token invalid" })
+
+        }
+    }
+    catch (err) {
+        return response.status(500).send({ message: "token invalid" })
+
+
     }
 }
 

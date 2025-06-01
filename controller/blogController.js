@@ -8,7 +8,7 @@ const getAllBlog = async (request, response) => {
         // console.log('find_Bloges',JSON.stringify(find_Bloges))
         return  response.status(200).send({ bloges_Data : find_Bloges})
     } catch (err) {
-        response.status(400).send({ massage: "Something Went Wrong ... !" })
+        response.status(400).send({ message: "Something Went Wrong ... !" })
     }
 }
 
@@ -21,7 +21,7 @@ const upload_Blogs = async (request, response) => {
         const objLength = Object.keys(body).length
 
         if (objLength === 0) {
-            return response.status(400).send({ massage: "Empty ... !" })
+            return response.status(400).send({ message: "Empty ... !" })
         }
 
         const bolg_Data = new blogModel({
@@ -34,11 +34,11 @@ const upload_Blogs = async (request, response) => {
         })
 
         await bolg_Data.save()
-        return response.status(201).send({ massage: "data insert succesfully ... !" })
+        return response.status(201).send({ message: "data insert succesfully ... !" })
 
 
     } catch (err) {
-        return response.status(400).send({ massage: "Somthing Went Wrong ...! ", err})
+        return response.status(400).send({ message: "Somthing Went Wrong ...! ", err})
 
     }
 
