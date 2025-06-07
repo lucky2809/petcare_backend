@@ -121,17 +121,18 @@ const logIn = async (request, response) => {  // login API
         const compairPassword = await bycrypt.compare(body.password, find_Data.password)
 
         if (!find_Data) {
-            return response.status(400).send({ message: "Email is not found ... ! ", err })
+            return response.status(400).send({ message: "Email is not found ... ! " })
         }
         const { email, role } = find_Data
         if (!compairPassword) {
-            return response.status(400).send({ message: "password is not found ... ! ", err })
+            return response.status(400).send({ message: "password is not found ... ! " })
         } else {
             const token = jwt_.sign({ email, role }, JWT_key, { expiresIn: "1h" })
             response.send({ message: "log in succesfully ", token })
         }
 
     } catch (err) {
+        console.log("err", err)
         return response.status(400).send({ message: "Somthing went wrong ... ! ", err })
     }
 
