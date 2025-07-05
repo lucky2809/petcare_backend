@@ -118,14 +118,15 @@ const logIn = async (request, response) => {  // login API
         const body = request.body
 
         const find_Data = await UserModel.findOne({ email: body.email })
+        if (!find_Data) {
+            return response.status(400).send({ message: "Email is Incorrect ... ! ", error_type : "email" })
+        }
         const compairPassword = await bycrypt.compare(body.password, find_Data.password)
 
-        if (!find_Data) {
-            return response.status(400).send({ message: "Email is not found ... ! " })
-        }
+
         const { email, role } = find_Data
         if (!compairPassword) {
-            return response.status(400).send({ message: "password is not found ... ! " })
+            return response.status(400).send({ message: "Incorrect Password ! ", error_type : "passNword" })
         } else {
             const token = jwt_.sign({ email, role }, JWT_key, { expiresIn: "1h" })
             response.send({ message: "log in succesfully ", token })
